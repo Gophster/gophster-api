@@ -1,19 +1,22 @@
 import { Repository, EntityRepository } from 'typeorm';
 import { User } from './user.entity';
-import { AuthCredentialsDto } from './dto/auth-credentials.dto';
+import { SignUpCredentialsDto } from './dto/signup-credentials.dto';
 import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { UnauthorizedException } from '@nestjs/common';
+import { SignInCredentialsDto } from './dto/signin-credentials.dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    const { username, password } = authCredentialsDto;
+  async signUp(signUpCredentialsDto: SignUpCredentialsDto): Promise<void> {
+    const { email, handle, password } = signUpCredentialsDto;
 
     const user = new User();
-    user.username = username;
+    user.email = email;
+    user.handle = handle;
     user.salt = await bcrypt.genSalt();
     user.password = await this.hashPassword(password, user.salt);
 
@@ -21,7 +24,7 @@ export class UserRepository extends Repository<User> {
       await user.save();
     } catch (error) {
       if (error.code === '23505') {
-        throw new ConflictException(`Username: ${username} already exists.`);
+        throw new ConflictException(`Username: ${handle} already exists.`);
       }
 
       throw new InternalServerErrorException();
@@ -29,16 +32,18 @@ export class UserRepository extends Repository<User> {
   }
 
   async validateUserPassword(
-    authCredentialsDto: AuthCredentialsDto,
-  ): Promise<string> {
-    const { username, password } = authCredentialsDto;
-    const user = await this.findOne({ username });
+    signInCredentialsDto: SignInCredentialsDto,
+  ): Promise<User> {
+    const { login, password } = signInCredentialsDto;
+    const user = await this.findOne({
+      where: [{ handle: login }, { email: login }],
+    });
 
-    if (user && user.validatePassword(password)) {
-      return user.username;
+    if (user && (await user.validatePassword(password))) {
+      return user;
     }
 
-    return null;
+    throw new UnauthorizedException();
   }
 
   private async hashPassword(password: string, salt: string): Promise<string> {
