@@ -21,7 +21,7 @@ export class AuthService {
   async signIn(
     signInCredentialsDto: SignInCredentialsDto,
   ): Promise<{ accessToken: string }> {
-    const {handle,email} = await this.userRepository.validateUserPassword(
+    const { handle, email } = await this.userRepository.validateUserPassword(
       signInCredentialsDto,
     );
 
