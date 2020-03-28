@@ -24,7 +24,7 @@ export class UserRepository extends Repository<User> {
       await user.save();
     } catch (error) {
       if (error.code === '23505') {
-        throw new ConflictException(`Username: ${handle} already exists.`);
+        throw new ConflictException(error.detail);
       }
 
       throw new InternalServerErrorException();
