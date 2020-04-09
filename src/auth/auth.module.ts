@@ -7,16 +7,17 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import * as fs from 'fs';
 import * as path from 'path';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       publicKey: fs.readFileSync(
-        path.join(process.cwd(), 'credentials/pub.key'),
+        path.join(process.cwd(), 'credentials/pub.pem'),
       ),
       privateKey: fs.readFileSync(
-        path.join(process.cwd(), 'credentials/private.key'),
+        path.join(process.cwd(), 'credentials/private.pem'),
       ),
       signOptions: {
         expiresIn: 3600,
@@ -26,6 +27,7 @@ import * as path from 'path';
     TypeOrmModule.forFeature([UserRepository]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],
+  exports: [PassportModule, JwtStrategy],
 })
 export class AuthModule {}

@@ -4,20 +4,18 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  Unique,
+  BeforeInsert,
 } from 'typeorm';
 
 @Entity()
-@Unique(['handle'])
-@Unique(['email'])
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
-  @Column({ length: '25' })
+  @Column({ length: '25', unique: true })
   handle: string;
 
   @Column()
@@ -26,8 +24,13 @@ export class User extends BaseEntity {
   @Column()
   salt: string;
 
+  @BeforeInsert()
+  async hashPasswordAndGenSalt() {
+    this.salt = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(this.password, this.salt);
+  }
+
   async validatePassword(password: string): Promise<boolean> {
-    const hash = await bcrypt.hash(password, this.salt);
-    return hash === this.password;
+    return await bcrypt.compare(password, this.password);
   }
 }
