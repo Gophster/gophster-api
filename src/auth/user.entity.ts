@@ -1,16 +1,22 @@
 import * as bcrypt from 'bcrypt';
+import { Goph } from '../goph/goph.entity';
 import {
   BaseEntity,
   Entity,
   PrimaryGeneratedColumn,
   Column,
   BeforeInsert,
+  OneToMany,
+  CreateDateColumn,
 } from 'typeorm';
 
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @CreateDateColumn()
+  created: Date;
 
   @Column({ unique: true })
   email: string;
@@ -23,6 +29,13 @@ export class User extends BaseEntity {
 
   @Column()
   salt: string;
+
+  @OneToMany(
+    type => Goph,
+    goph => goph.author,
+    { eager: false },
+  )
+  gophs: Goph[];
 
   @BeforeInsert()
   async hashPasswordAndGenSalt() {
