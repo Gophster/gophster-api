@@ -22,7 +22,7 @@ export class GophService {
   }
 
   async getGophsForUser(user: User): Promise<Goph[]> {
-    const gophs = await this.gophRepository.find({ where: { author: user } });
+    const gophs = await this.gophRepository.find({ where: { author: user },order:{created: 'DESC'} });
     return gophs;
   }
 
