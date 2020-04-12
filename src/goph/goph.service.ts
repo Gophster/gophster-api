@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { GophDto } from './dto/goph.dto';
 import { User } from '../auth/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -24,5 +24,44 @@ export class GophService {
   async getGophsForUser(user: User): Promise<Goph[]> {
     const gophs = await this.gophRepository.find({ where: { author: user } });
     return gophs;
+  }
+
+  async getSinlgeGophById(id: string): Promise<Goph> {
+    const goph = await this.gophRepository.findOne(id);
+    if (!goph) {
+      throw new NotFoundException();
+    }
+
+    return goph;
+  }
+
+  async patchGoph(id: string, updatedGoph: GophDto, user: User): Promise<Goph> {
+    const goph = await this.gophRepository.findOne({
+      where: { id: id, author: user },
+    });
+
+    if (!goph) {
+      throw new NotFoundException();
+    }
+
+    await this.gophRepository.update(id, updatedGoph);
+
+    await goph.reload();
+
+    return goph;
+  }
+
+  async deleteGoph(id: string, user: User): Promise<Goph> {
+    const goph = await this.gophRepository.findOne({
+      where: { id: id, author: user },
+    });
+
+    if (!goph) {
+      throw new NotFoundException();
+    }
+
+    await goph.remove();
+
+    return goph;
   }
 }
