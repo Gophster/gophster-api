@@ -36,7 +36,7 @@ export class GophController {
       {
         page,
         limit,
-        route:`${process.env.API_URL}/gophs`,
+        route: `${process.env.API_URL}/gophs`,
       },
       user,
     );
