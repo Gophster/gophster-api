@@ -10,6 +10,9 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { SignInCredentialsDto } from './dto/signin-credentials.dto';
 import { User } from './user.entity';
+import { RessetPasswordDto } from './dto/resset-password.dto';
+import { NotFoundException } from '@nestjs/common';
+import { SendGridService } from '@anchan828/nest-sendgrid';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +20,7 @@ export class AuthService {
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
     private jwtService: JwtService,
+    private sendgridService: SendGridService,
   ) {}
 
   async signUp(userData: SignUpCredentialsDto): Promise<void> {
@@ -65,5 +69,19 @@ export class AuthService {
     return {
       accessToken,
     };
+  }
+
+  async ressetPassword(data: RessetPasswordDto): Promise<void> {
+    const { email } = data;
+    const user = await this.userRepository.findOne({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+
+    //TODO Implement ful logic
   }
 }

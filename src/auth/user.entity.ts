@@ -37,6 +37,16 @@ export class User extends BaseEntity {
   )
   gophs: Goph[];
 
+  @Column({
+    nullable:true
+  })
+  resetToken:string
+
+  @Column({
+    nullable:true
+  })
+  resetTokenExpiration: Date;
+
   @BeforeInsert()
   async hashPasswordAndGenSalt() {
     this.salt = await bcrypt.genSalt();
