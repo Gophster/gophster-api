@@ -9,6 +9,7 @@ import {
   ValidationPipe,
   ParseUUIDPipe,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -17,11 +18,29 @@ import { ExtractUser } from 'src/auth/extract-user.docorator';
 import { GophService } from './goph.service';
 import { User } from 'src/auth/user.entity';
 import { Goph } from './goph.entity';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('gophs')
 @UseGuards(AuthGuard())
 export class GophController {
   constructor(private gophService: GophService) {}
+
+  @Get('')
+  showUserGophs(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @ExtractUser() user: User,
+  ): Promise<Pagination<Goph>> {
+    limit = limit > 100 ? 100 : limit;
+    return this.gophService.paginateUserGophs(
+      {
+        page,
+        limit,
+        route:`${process.env.API_URL}/gophs`,
+      },
+      user,
+    );
+  }
 
   @Post()
   createGoph(
@@ -31,13 +50,8 @@ export class GophController {
     return this.gophService.createGoph(goph, user);
   }
 
-  @Get()
-  showGophs(@ExtractUser() user: User): Promise<Goph[]> {
-    return this.gophService.getGophsForUser(user);
-  }
-
   @Get(':id')
-  showSingleGoph(@Param('id', new ParseUUIDPipe()) id: string,){
+  showSingleGoph(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.gophService.getSinlgeGophById(id);
   }
 

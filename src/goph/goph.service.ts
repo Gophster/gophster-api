@@ -4,6 +4,11 @@ import { User } from '../auth/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GophRepository } from './goph.repoistory';
 import { Goph } from './goph.entity';
+import {
+  paginate,
+  Pagination,
+  IPaginationOptions,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class GophService {
@@ -22,8 +27,21 @@ export class GophService {
   }
 
   async getGophsForUser(user: User): Promise<Goph[]> {
-    const gophs = await this.gophRepository.find({ where: { author: user },order:{created: 'DESC'} });
+    const gophs = await this.gophRepository.find({
+      where: { author: user },
+      order: { created: 'DESC' },
+    });
     return gophs;
+  }
+
+  async paginateUserGophs(
+    options: IPaginationOptions,
+    user: User,
+  ): Promise<Pagination<Goph>> {
+    return paginate<Goph>(this.gophRepository, options, {
+      where: { author: user },
+      order: { created: 'DESC' },
+    });
   }
 
   async getSinlgeGophById(id: string): Promise<Goph> {
