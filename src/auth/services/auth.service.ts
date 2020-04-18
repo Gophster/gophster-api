@@ -4,12 +4,12 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserRepository } from './user.repository';
-import { SignUpCredentialsDto } from './dto/signup-credentials.dto';
+import { UserRepository } from '../entity/user.repository';
+import { SignUpCredentialsDto } from '../dto/signup-credentials.dto';
 import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { SignInCredentialsDto } from './dto/signin-credentials.dto';
-import { User } from './user.entity';
+import { JwtPayload } from '../interfaces/jwt-payload.interface';
+import { SignInCredentialsDto } from '../dto/signin-credentials.dto';
+import { User } from '../entity/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -58,6 +58,10 @@ export class AuthService {
       uuid: user.id,
       handle: user.handle,
       email: user.email,
+      name: user.name,
+      avatar: user.avatar,
+      location: user.location,
+      birthdate: user.birthdate,
     };
 
     const accessToken = this.jwtService.sign(payload);

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GophDto } from './dto/goph.dto';
-import { User } from '../auth/user.entity';
+import { User } from '../auth/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GophRepository } from './goph.repoistory';
 import { Goph } from './goph.entity';

@@ -14,9 +14,9 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 
 import { GophDto } from './dto/goph.dto';
-import { ExtractUser } from 'src/auth/extract-user.docorator';
+import { ExtractUser } from 'src/auth/utils/extract-user.docorator';
 import { GophService } from './goph.service';
-import { User } from 'src/auth/user.entity';
+import { User } from 'src/auth/entity/user.entity';
 import { Goph } from './goph.entity';
 import { Pagination } from 'nestjs-typeorm-paginate';
 
