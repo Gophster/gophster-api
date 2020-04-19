@@ -9,6 +9,7 @@ import {
   ValidationPipe,
   ParseUUIDPipe,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
