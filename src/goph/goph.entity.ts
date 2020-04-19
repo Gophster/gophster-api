@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../auth/user.entity';
+import { User } from '../auth/entity/user.entity';
 
 @Entity()
 export class Goph extends BaseEntity {

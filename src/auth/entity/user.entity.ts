@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { Goph } from '../goph/goph.entity';
+import { Goph } from '../../goph/goph.entity';
 import {
   BaseEntity,
   Entity,
@@ -15,14 +15,26 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @CreateDateColumn()
-  created: Date;
+  @Column({ length: 25, unique: true })
+  handle: string;
 
   @Column({ unique: true })
   email: string;
 
-  @Column({ length: '25', unique: true })
-  handle: string;
+  @Column({ length: 50, nullable: true })
+  name: string;
+
+  @Column({ length: 30, nullable: true })
+  location: string;
+
+  @Column({ nullable: true })
+  birthdate: Date;
+
+  @Column({ nullable: true, default: 'default-avatar.png' })
+  avatar: string;
+
+  @CreateDateColumn()
+  created: Date;
 
   @Column()
   password: string;
