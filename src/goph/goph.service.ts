@@ -14,7 +14,7 @@ import {
 export class GophService {
   constructor(
     @InjectRepository(GophRepository)
-    private gophRepository: GophRepository,
+    public gophRepository: GophRepository,
   ) {}
 
   async createGoph(gophData: GophDto, user: User): Promise<Goph> {

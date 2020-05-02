@@ -8,7 +8,7 @@ import { User } from '../entity/user.entity';
 export class UserService {
   constructor(
     @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
+    public userRepository: UserRepository,
   ) {}
 
   async updateUser(

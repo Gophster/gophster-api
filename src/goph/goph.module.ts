@@ -1,3 +1,4 @@
+import { UserService } from './../auth/services/user.service';
 import { Module } from '@nestjs/common';
 import { GophService } from './goph.service';
 import { GophController } from './goph.controller';

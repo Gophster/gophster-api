@@ -1,3 +1,4 @@
+import { UserService } from './../auth/services/user.service';
 import {
   Controller,
   UseGuards,
@@ -10,6 +11,7 @@ import {
   ParseUUIDPipe,
   Delete,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -23,10 +25,13 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 @Controller('gophs')
 @UseGuards(AuthGuard())
 export class GophController {
-  constructor(private gophService: GophService) {}
+  constructor(
+    private gophService: GophService,
+    private userService: UserService,
+  ) {}
 
   @Get('')
-  showUserGophs(
+  showCurrentUserGophs(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @ExtractUser() user: User,
@@ -42,7 +47,7 @@ export class GophController {
     );
   }
 
-  @Post()
+  @Post('')
   createGoph(
     @Body(new ValidationPipe()) goph: GophDto,
     @ExtractUser() user: User,
@@ -70,5 +75,29 @@ export class GophController {
     @ExtractUser() user: User,
   ) {
     return this.gophService.deleteGoph(id, user);
+  }
+
+  @Get('user/:handle')
+  async getUserGophs(
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+    @Param('handle') handle: string,
+  ): Promise<Pagination<Goph>> {
+    limit = limit > 100 ? 100 : limit;
+    const user = await this.userService.userRepository.findOne({
+      where: { handle },
+    });
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return this.gophService.paginateUserGophs(
+      {
+        page,
+        limit,
+        route: `${process.env.API_URL}/gophs/user/${handle}`,
+      },
+      user,
+    );
   }
 }
