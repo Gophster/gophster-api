@@ -2,8 +2,8 @@ import {
   IsString,
   MinLength,
   MaxLength,
-  IsDate,
   IsOptional,
+  IsDateString,
 } from 'class-validator';
 
 export class UserDto {
@@ -20,6 +20,6 @@ export class UserDto {
   location: string;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   birthdate: Date;
 }
