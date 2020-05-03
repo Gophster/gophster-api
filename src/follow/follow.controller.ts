@@ -11,6 +11,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   HttpCode,
+  Get,
 } from '@nestjs/common';
 
 import { FollowService } from './follow.service';
@@ -39,5 +40,14 @@ export class FollowController {
     @ExtractUser() user: User,
   ): Promise<void> {
     return this.followService.removeFollow(data.handle, user);
+  }
+
+  @Post('isfollowing')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async isfollowing(
+    @Body() data: FollowDto,
+    @ExtractUser() user: User,
+  ): Promise<{ data: boolean }> {
+    return this.followService.isFollowing(data.handle, user);
   }
 }

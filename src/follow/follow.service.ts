@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
+import { FollowDto } from './dto/follow.dto';
 
 @Injectable()
 export class FollowService {
@@ -49,5 +50,13 @@ export class FollowService {
       return follow;
     }
     return null;
+  }
+
+  async isFollowing(handle: string, author: User): Promise<{ data: boolean }> {
+    const reciver = await this.userService.getUserByHandle(handle);
+    if (await this.getFollowIfExsits(author, reciver)) {
+      return { data: true };
+    }
+    return { data: false };
   }
 }

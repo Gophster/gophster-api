@@ -6,9 +6,13 @@ export class Follow extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(type => User)
+  @ManyToOne(type => User, {
+    eager: true,
+  })
   author: User;
 
-  @ManyToOne(type => User)
+  @ManyToOne(type => User, {
+    eager: true,
+  })
   reciver: User;
 }
