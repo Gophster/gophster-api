@@ -29,18 +29,17 @@ export class UserService {
     return this.createUserResponse(user);
   }
 
-  async getUserByHandle(handle: string): Promise<Partial<User>> {
+  async getUserByHandle(handle: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { handle } });
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException(`User ${handle} does not exists`);
     }
 
     return this.createUserResponse(user);
   }
 
-  async createUserResponse(user: User): Promise<Partial<User>> {
-    const { password, salt, avatar, ...userResponse } = user;
-    userResponse['avatar'] = `${process.env.API_URL}/user/avatars/${avatar}`;
-    return userResponse;
+  async createUserResponse(user: User): Promise<User> {
+    user.avatar = `${process.env.API_URL}/user/avatars/${user.avatar}`;
+    return user;
   }
 }

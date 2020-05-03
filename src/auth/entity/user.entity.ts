@@ -1,5 +1,3 @@
-import * as bcrypt from 'bcrypt';
-import { Goph } from '../../goph/goph.entity';
 import {
   BaseEntity,
   Entity,
@@ -9,6 +7,10 @@ import {
   OneToMany,
   CreateDateColumn,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import * as bcrypt from 'bcrypt';
+
+import { Goph } from '../../goph/goph.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -37,17 +39,18 @@ export class User extends BaseEntity {
   created: Date;
 
   @Column()
+  @Exclude()
   password: string;
 
   @Column()
+  @Exclude()
   salt: string;
 
   @OneToMany(
     type => Goph,
     goph => goph.author,
-    { eager: false },
   )
-  gophs: Goph[];
+  gophs: Promise<Goph[]>;
 
   @BeforeInsert()
   async hashPasswordAndGenSalt() {

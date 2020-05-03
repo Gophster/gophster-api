@@ -10,6 +10,7 @@ import {
   Get,
   Param,
   Res,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -53,7 +54,8 @@ export class UserController {
 
   @Get(':handle')
   @UseGuards(AuthGuard())
-  async userProfile(@Param('handle') handle): Promise<Partial<User>> {
+  @UseInterceptors(ClassSerializerInterceptor)
+  async userProfile(@Param('handle') handle): Promise<User> {
     return this.userService.getUserByHandle(handle);
   }
 
