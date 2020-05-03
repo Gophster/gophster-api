@@ -1,4 +1,3 @@
-import { FollowSubscriber } from './subscribers/follow-system.subscriber';
 import { FollowModule } from './../follow/follow.module';
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
