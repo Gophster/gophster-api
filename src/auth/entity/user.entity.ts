@@ -7,7 +7,7 @@ import {
   OneToMany,
   CreateDateColumn,
 } from 'typeorm';
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 
 import { Goph } from '../../goph/goph.entity';
@@ -33,6 +33,7 @@ export class User extends BaseEntity {
   birthdate: Date;
 
   @Column({ nullable: true, default: 'default-avatar.png' })
+  @Transform(avatar => `${process.env.API_URL}/user/avatars/${avatar}`)
   avatar: string;
 
   @CreateDateColumn()
@@ -47,10 +48,17 @@ export class User extends BaseEntity {
   salt: string;
 
   @OneToMany(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type => Goph,
     goph => goph.author,
   )
   gophs: Promise<Goph[]>;
+
+  @Column({ default: '0' })
+  followingAmount: number;
+
+  @Column({ default: '0' })
+  followersAmount: number;
 
   @BeforeInsert()
   async hashPasswordAndGenSalt() {

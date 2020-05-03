@@ -44,11 +44,12 @@ export class UserController {
       },
     }),
   )
+  @UseInterceptors(ClassSerializerInterceptor)
   async updateProfile(
     @Body(new ValidationPipe()) data: UserDto,
     @UploadedFile() avatar,
     @ExtractUser() user,
-  ): Promise<Partial<User>> {
+  ): Promise<User> {
     return this.userService.updateUser(data, avatar, user);
   }
 

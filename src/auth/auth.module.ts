@@ -1,4 +1,6 @@
-import { Module } from '@nestjs/common';
+import { FollowSubscriber } from './subscribers/follow-system.subscriber';
+import { FollowModule } from './../follow/follow.module';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
@@ -28,6 +30,7 @@ import * as fs from 'fs';
       },
     }),
     TypeOrmModule.forFeature([UserRepository]),
+    forwardRef(() => FollowModule),
   ],
   controllers: [AuthController, UserController],
   providers: [AuthService, JwtStrategy, UserService],
