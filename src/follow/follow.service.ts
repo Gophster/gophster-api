@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
-import { FollowDto } from './dto/follow.dto';
 
 @Injectable()
 export class FollowService {
