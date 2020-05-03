@@ -47,9 +47,7 @@ export class FollowController {
   async isfollowing(
     @Body() data: FollowDto,
     @ExtractUser() user: User,
-  ): Promise<{ data: boolean}>{
-    return this.followService.isFollowing(data.handle,user);
+  ): Promise<{ data: boolean }> {
+    return this.followService.isFollowing(data.handle, user);
   }
-
-
 }

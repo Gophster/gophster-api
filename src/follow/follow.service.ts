@@ -52,11 +52,11 @@ export class FollowService {
     return null;
   }
 
-  async isFollowing(handle: string, author: User): Promise<{data: boolean}> {
+  async isFollowing(handle: string, author: User): Promise<{ data: boolean }> {
     const reciver = await this.userService.getUserByHandle(handle);
-    if(await this.getFollowIfExsits(author,reciver)){
-      return {data: true};
+    if (await this.getFollowIfExsits(author, reciver)) {
+      return { data: true };
     }
-    return {data:false};
+    return { data: false };
   }
 }
