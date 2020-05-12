@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
+import { createQueryBuilder, getRepository } from 'typeorm';
 
 @Injectable()
 export class FollowService {
@@ -57,5 +58,27 @@ export class FollowService {
       return { data: true };
     }
     return { data: false };
+  }
+
+  async suggestions(author: User): Promise<User[]> {
+    const topFollowers = await getRepository(User)
+    .createQueryBuilder("user")
+    .limit(3)
+    .where("user.id NOT IN (" +
+      await createQueryBuilder()
+      .select("follow.reciver")
+      .from(Follow,"follow")
+      .where("follow.author = :userId")
+      .getQuery() + ")"
+    )
+    .setParameter("userId",author.id)
+    .orderBy("user.followersAmount","DESC")
+    .getMany();
+    if(topFollowers){
+      return topFollowers;
+    }
+    else{
+      return null;
+    }
   }
 }

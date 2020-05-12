@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import {
   Controller,
   Post,
+  Get,
   Body,
   UseGuards,
   UsePipes,
@@ -49,4 +50,12 @@ export class FollowController {
   ): Promise<{ data: boolean }> {
     return this.followService.isFollowing(data.handle, user);
   }
+
+  @Get('suggestions')
+  async suggestions(
+    @ExtractUser() user: User,
+  ): Promise<User[]> {
+    return this.followService.suggestions(user);
+  }
+
 }
