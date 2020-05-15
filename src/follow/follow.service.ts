@@ -5,7 +5,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
-import { createQueryBuilder, getRepository } from 'typeorm';
+import { createQueryBuilder, getRepository, QueryBuilder, Repository, SelectQueryBuilder } from 'typeorm';
+import { Goph } from 'src/goph/goph.entity';
+
+import {
+  paginate,
+  Pagination,
+  IPaginationOptions,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class FollowService {
@@ -80,5 +87,23 @@ export class FollowService {
     else{
       return null;
     }
+  }
+
+  async paginateNewsFeedGophs(
+    options: IPaginationOptions,
+    user: User,
+  ): Promise<Pagination<Goph>> {
+    const newsFeedGophs = await getRepository(Goph)
+    .createQueryBuilder("goph")
+    .where("goph.author IN (" +
+      await createQueryBuilder()
+      .select("follow.reciver")
+      .from(Follow,"follow")
+      .where("follow.author = :userId")
+      .getQuery() + ")"
+    )
+    .setParameter("userId",user.id)
+    .orderBy("goph.created","DESC");
+    return paginate<Goph>(newsFeedGophs, options);
   }
 }
