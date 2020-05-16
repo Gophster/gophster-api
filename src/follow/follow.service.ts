@@ -1,3 +1,4 @@
+import { UserRepository } from './../auth/entity/user.repository';
 import { Follow } from './follow.entity';
 import { UserService } from './../auth/services/user.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
@@ -74,26 +75,24 @@ export class FollowService {
   }
 
   async suggestions(author: User): Promise<User[]> {
-    const topFollowers = await getRepository(User)
+    const followSuggestions = await this.userService.userRepository
       .createQueryBuilder('user')
-      .limit(3)
-      .where(
-        'user.id NOT IN (' +
-          (await createQueryBuilder()
-            .select('follow.reciver')
-            .from(Follow, 'follow')
-            .where('follow.author = :userId')
-            .getQuery()) +
-          ')',
-      )
-      .setParameter('userId', author.id)
+      .where(qb => {
+        const subQuery = qb
+          .subQuery()
+          .select('follow.reciver')
+          .from(Follow, 'follow')
+          .where('follow.author = :userId')
+          .getQuery();
+
+        return `user.id NOT IN (${subQuery})`;
+      })
+      .setParameter('userId',author.id)
       .orderBy('user.followersAmount', 'DESC')
+      .limit(3)
       .getMany();
-    if (topFollowers) {
-      return topFollowers;
-    } else {
-      return null;
-    }
+
+    return followSuggestions;
   }
 
   async paginateNewsFeedGophs(

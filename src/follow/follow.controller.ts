@@ -61,11 +61,13 @@ export class FollowController {
   }
 
   @Get('suggestions')
+  @UseInterceptors(ClassSerializerInterceptor)
   async suggestions(@ExtractUser() user: User): Promise<User[]> {
     return this.followService.suggestions(user);
   }
 
   @Get('newsfeed')
+  @UseInterceptors(ClassSerializerInterceptor)
   async getnewsfeed(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
