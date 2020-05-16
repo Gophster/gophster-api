@@ -87,7 +87,7 @@ export class FollowService {
 
         return `user.id NOT IN (${subQuery})`;
       })
-      .setParameter('userId',author.id)
+      .setParameter('userId', author.id)
       .orderBy('user.followersAmount', 'DESC')
       .limit(3)
       .getMany();
