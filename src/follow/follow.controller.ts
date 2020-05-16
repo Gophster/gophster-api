@@ -15,7 +15,7 @@ import {
   ClassSerializerInterceptor,
   HttpCode,
   NotFoundException,
-  Param
+  Param,
 } from '@nestjs/common';
 
 import { FollowService } from './follow.service';
@@ -29,8 +29,8 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 export class FollowController {
   constructor(
     private followService: FollowService,
-    private userService: UserService
-    ) {}
+    private userService: UserService,
+  ) {}
 
   @Post('follow')
   @UsePipes(ValidationPipe)
@@ -61,10 +61,7 @@ export class FollowController {
   }
 
   @Get('suggestions')
-  async suggestions(
-    
-    @ExtractUser() user: User,
-  ): Promise<User[]> {
+  async suggestions(@ExtractUser() user: User): Promise<User[]> {
     return this.followService.suggestions(user);
   }
 
@@ -91,5 +88,4 @@ export class FollowController {
       user,
     );
   }
-  
 }

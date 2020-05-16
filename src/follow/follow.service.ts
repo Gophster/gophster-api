@@ -5,7 +5,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
-import { createQueryBuilder, getRepository, QueryBuilder, Repository, SelectQueryBuilder } from 'typeorm';
+import {
+  createQueryBuilder,
+  getRepository,
+  QueryBuilder,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 import { Goph } from 'src/goph/goph.entity';
 
 import {
@@ -69,22 +75,23 @@ export class FollowService {
 
   async suggestions(author: User): Promise<User[]> {
     const topFollowers = await getRepository(User)
-    .createQueryBuilder("user")
-    .limit(3)
-    .where("user.id NOT IN (" +
-      await createQueryBuilder()
-      .select("follow.reciver")
-      .from(Follow,"follow")
-      .where("follow.author = :userId")
-      .getQuery() + ")"
-    )
-    .setParameter("userId",author.id)
-    .orderBy("user.followersAmount","DESC")
-    .getMany();
-    if(topFollowers){
+      .createQueryBuilder('user')
+      .limit(3)
+      .where(
+        'user.id NOT IN (' +
+          (await createQueryBuilder()
+            .select('follow.reciver')
+            .from(Follow, 'follow')
+            .where('follow.author = :userId')
+            .getQuery()) +
+          ')',
+      )
+      .setParameter('userId', author.id)
+      .orderBy('user.followersAmount', 'DESC')
+      .getMany();
+    if (topFollowers) {
       return topFollowers;
-    }
-    else{
+    } else {
       return null;
     }
   }
@@ -94,16 +101,18 @@ export class FollowService {
     user: User,
   ): Promise<Pagination<Goph>> {
     const newsFeedGophs = await getRepository(Goph)
-    .createQueryBuilder("goph")
-    .where("goph.author IN (" +
-      await createQueryBuilder()
-      .select("follow.reciver")
-      .from(Follow,"follow")
-      .where("follow.author = :userId")
-      .getQuery() + ")"
-    )
-    .setParameter("userId",user.id)
-    .orderBy("goph.created","DESC");
+      .createQueryBuilder('goph')
+      .where(
+        'goph.author IN (' +
+          (await createQueryBuilder()
+            .select('follow.reciver')
+            .from(Follow, 'follow')
+            .where('follow.author = :userId')
+            .getQuery()) +
+          ')',
+      )
+      .setParameter('userId', user.id)
+      .orderBy('goph.created', 'DESC');
     return paginate<Goph>(newsFeedGophs, options);
   }
 }
