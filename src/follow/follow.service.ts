@@ -2,7 +2,7 @@ import { UserRepository } from './../auth/entity/user.repository';
 import { Follow } from './follow.entity';
 import { UserService } from './../auth/services/user.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectRepository, handleRetry } from '@nestjs/typeorm';
 
 import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
@@ -29,11 +29,11 @@ export class FollowService {
     public userService: UserService,
   ) {}
 
-  async createFollow(reciverId: string, author: User) {
-    if (author.id == reciverId) {
+  async createFollow(reciverHandle: string, author: User) {
+    if (author.handle == reciverHandle) {
       throw new BadRequestException('Self following is not allowed');
     }
-    const reciver = await this.userService.getUserByHandle(reciverId);
+    const reciver = await this.userService.getUserByHandle(reciverHandle);
 
     if (await this.getFollowIfExsits(author, reciver)) {
       throw new BadRequestException('You are already following this person');
@@ -44,11 +44,11 @@ export class FollowService {
     return follow;
   }
 
-  async removeFollow(reciverId: string, author: User): Promise<void> {
-    if (author.id == reciverId) {
+  async removeFollow(reciverHandle: string, author: User): Promise<void> {
+    if (author.handle == reciverHandle) {
       throw new BadRequestException('Self following is not allowed');
     }
-    const reciver = await this.userService.getUserByHandle(reciverId);
+    const reciver = await this.userService.getUserByHandle(reciverHandle);
     const follow = await this.getFollowIfExsits(author, reciver);
     if (!follow) {
       throw new BadRequestException('You are not following this person');
