@@ -1,17 +1,13 @@
-import { UserRepository } from './../auth/entity/user.repository';
 import { Follow } from './follow.entity';
 import { UserService } from './../auth/services/user.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectRepository, handleRetry } from '@nestjs/typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
 import {
   createQueryBuilder,
   getRepository,
-  QueryBuilder,
-  Repository,
-  SelectQueryBuilder,
 } from 'typeorm';
 import { Goph } from 'src/goph/goph.entity';
 

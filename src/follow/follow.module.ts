@@ -1,3 +1,4 @@
+import { NotificationsGateway } from '../notification/notification.gateway';
 import { AuthModule } from './../auth/auth.module';
 import { FollowRepository } from './follow.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';

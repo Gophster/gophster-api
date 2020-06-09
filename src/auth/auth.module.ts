@@ -1,3 +1,4 @@
+import { NotificationModule } from './../notification/notification.module';
 import { FollowModule } from './../follow/follow.module';
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -30,6 +31,7 @@ import * as fs from 'fs';
     }),
     TypeOrmModule.forFeature([UserRepository]),
     forwardRef(() => FollowModule),
+    forwardRef(() => NotificationModule),
   ],
   controllers: [AuthController, UserController],
   providers: [AuthService, JwtStrategy, UserService],
