@@ -96,23 +96,4 @@ export class FollowService {
     return followSuggestions;
   }
 
-  async paginateNewsFeedGophs(
-    options: IPaginationOptions,
-    user: User,
-  ): Promise<Pagination<Goph>> {
-    const newsFeedGophs = await getRepository(Goph)
-      .createQueryBuilder('goph')
-      .where(
-        'goph.author IN (' +
-          (await createQueryBuilder()
-            .select('follow.reciver')
-            .from(Follow, 'follow')
-            .where('follow.author = :userId')
-            .getQuery()) +
-          ')',
-      )
-      .setParameter('userId', user.id)
-      .orderBy('goph.created', 'DESC');
-    return paginate<Goph>(newsFeedGophs, options);
-  }
 }

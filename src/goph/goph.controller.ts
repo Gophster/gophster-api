@@ -12,6 +12,8 @@ import {
   Delete,
   Query,
   NotFoundException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -30,18 +32,20 @@ export class GophController {
     private userService: UserService,
   ) {}
 
-  @Get('')
-  showCurrentUserGophs(
+  @Get('feed')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getnewsfeed(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @ExtractUser() user: User,
   ): Promise<Pagination<Goph>> {
     limit = limit > 100 ? 100 : limit;
-    return this.gophService.paginateUserGophs(
+
+    return this.gophService.paginateNewsFeedGophs(
       {
         page,
         limit,
-        route: `${process.env.API_URL}/gophs`,
+        route: `${process.env.API_URL}/gophs/feed`,
       },
       user,
     );

@@ -65,29 +65,4 @@ export class FollowController {
   async suggestions(@ExtractUser() user: User): Promise<User[]> {
     return this.followService.suggestions(user);
   }
-
-  @Get('newsfeed')
-  @UseInterceptors(ClassSerializerInterceptor)
-  async getnewsfeed(
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-    @ExtractUser() user: User,
-  ): Promise<Pagination<Goph>> {
-    limit = limit > 100 ? 100 : limit;
-    const users = await this.userService.userRepository.findOne({
-      where: { handle: user.handle },
-    });
-    if (!user) {
-      throw new NotFoundException();
-    }
-
-    return this.followService.paginateNewsFeedGophs(
-      {
-        page,
-        limit,
-        route: `${process.env.API_URL}/actions/follow/${user.handle}`,
-      },
-      user,
-    );
-  }
 }
