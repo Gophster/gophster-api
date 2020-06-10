@@ -9,6 +9,8 @@ import {
   Pagination,
   IPaginationOptions,
 } from 'nestjs-typeorm-paginate';
+import { Follow } from '../follow/follow.entity';
+import { In } from 'typeorm';
 
 @Injectable()
 export class GophService {
@@ -81,5 +83,28 @@ export class GophService {
     await goph.remove();
 
     return goph;
+  }
+
+  async paginateNewsFeedGophs(
+    options: IPaginationOptions,
+    user: User,
+  ): Promise<Pagination<Goph>> {
+    const recivers = await this.gophRepository.manager.connection
+      .createQueryBuilder()
+      .select('follow.reciver')
+      .from(Follow, 'follow')
+      .where('follow.author = :userId')
+      .setParameter('userId', user.id)
+      .execute();
+
+    let ids = [];
+    if (recivers instanceof Array) {
+      ids = recivers.map(({ reciverId }) => reciverId);
+    }
+
+    return paginate<Goph>(this.gophRepository, options, {
+      where: { author: In([...ids, user.id]) },
+      order: { created: 'DESC' },
+    });
   }
 }

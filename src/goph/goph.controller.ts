@@ -12,6 +12,8 @@ import {
   Delete,
   Query,
   NotFoundException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -30,24 +32,27 @@ export class GophController {
     private userService: UserService,
   ) {}
 
-  @Get('')
-  showCurrentUserGophs(
+  @Get('feed')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getnewsfeed(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @ExtractUser() user: User,
   ): Promise<Pagination<Goph>> {
     limit = limit > 100 ? 100 : limit;
-    return this.gophService.paginateUserGophs(
+
+    return this.gophService.paginateNewsFeedGophs(
       {
         page,
         limit,
-        route: `${process.env.API_URL}/gophs`,
+        route: `${process.env.API_URL}/gophs/feed`,
       },
       user,
     );
   }
 
   @Post('')
+  @UseInterceptors(ClassSerializerInterceptor)
   createGoph(
     @Body(new ValidationPipe()) goph: GophDto,
     @ExtractUser() user: User,
@@ -56,11 +61,13 @@ export class GophController {
   }
 
   @Get(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
   showSingleGoph(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.gophService.getSinlgeGophById(id);
   }
 
   @Patch(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
   patchGoph(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body(new ValidationPipe()) goph: GophDto,
@@ -78,6 +85,7 @@ export class GophController {
   }
 
   @Get('user/:handle')
+  @UseInterceptors(ClassSerializerInterceptor)
   async getUserGophs(
     @Query('page') page = 1,
     @Query('limit') limit = 10,

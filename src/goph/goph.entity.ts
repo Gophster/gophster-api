@@ -26,7 +26,7 @@ export class Goph extends BaseEntity {
   @ManyToOne(
     type => User,
     user => user.gophs,
-    { eager: false },
+    { eager: true },
   )
   author: User;
 }
