@@ -5,17 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
-import {
-  createQueryBuilder,
-  getRepository,
-} from 'typeorm';
-import { Goph } from 'src/goph/goph.entity';
 
-import {
-  paginate,
-  Pagination,
-  IPaginationOptions,
-} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class FollowService {

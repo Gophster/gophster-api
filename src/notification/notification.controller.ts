@@ -1,5 +1,13 @@
 import { AuthGuard } from '@nestjs/passport';
-import { Controller, UseGuards, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  UseGuards,
+  Get,
+  Query,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  Post,
+} from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
 
 import { Notification } from './notification.entity';
@@ -17,6 +25,7 @@ export class NotificationController {
   ) {}
 
   @Get('')
+  @UseInterceptors(ClassSerializerInterceptor)
   showCurrentUserNotifications(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
@@ -34,9 +43,12 @@ export class NotificationController {
   }
 
   @Get('count')
-  getUnreadCount(
-    @ExtractUser() user: User
-  ){
-    return this.notificationService.getUnreadCount(user)
+  getUnreadCount(@ExtractUser() user: User): Promise<{ count: number }> {
+    return this.notificationService.getUnreadCount(user);
+  }
+
+  @Post('read-all')
+  readAll(@ExtractUser() user: User) {
+    return this.notificationService.readAll(user);
   }
 }

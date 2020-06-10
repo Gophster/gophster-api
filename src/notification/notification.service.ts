@@ -34,4 +34,18 @@ export class NotificationService {
 
     return { count };
   }
+
+  async readAll(user: User): Promise<{ success: boolean }> {
+    await this.notificationRepository
+      .createQueryBuilder('notification')
+      .update(Notification)
+      .set({
+        read: true,
+      })
+      .andWhere('id = :id', { id: user.id })
+      .andWhere('read = :not', { not: false })
+      .execute();
+
+    return { success: true };
+  }
 }
