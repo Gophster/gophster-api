@@ -52,6 +52,7 @@ export class GophController {
   }
 
   @Post('')
+  @UseInterceptors(ClassSerializerInterceptor)
   createGoph(
     @Body(new ValidationPipe()) goph: GophDto,
     @ExtractUser() user: User,
@@ -60,11 +61,13 @@ export class GophController {
   }
 
   @Get(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
   showSingleGoph(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.gophService.getSinlgeGophById(id);
   }
 
   @Patch(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
   patchGoph(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body(new ValidationPipe()) goph: GophDto,
@@ -82,6 +85,7 @@ export class GophController {
   }
 
   @Get('user/:handle')
+  @UseInterceptors(ClassSerializerInterceptor)
   async getUserGophs(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
