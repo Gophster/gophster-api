@@ -1,3 +1,4 @@
+import { Goph } from 'src/goph/goph.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -47,5 +48,29 @@ export class NotificationService {
       .execute();
 
     return { success: true };
+  }
+
+  async createActionNotification(user: User, initiator: User, action: string) {
+    await this.notificationRepository
+      .create({
+        user,
+        initiator,
+        read: false,
+        text: `@${initiator.handle} started ${action} you`,
+        link: `/user/${initiator.handle}`,
+      })
+      .save();
+  }
+
+  async createNewGophNotification(user: User, initiator: User, goph: Goph) {
+    await this.notificationRepository
+      .create({
+        user,
+        initiator,
+        read: false,
+        text: `@${initiator.handle} added new goph`,
+        link: `/gophs/${goph.id}`,
+      })
+      .save();
   }
 }

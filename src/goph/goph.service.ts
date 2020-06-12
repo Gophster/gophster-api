@@ -1,3 +1,4 @@
+import { FollowService } from './../follow/follow.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GophDto } from './dto/goph.dto';
 import { User } from '../auth/entity/user.entity';

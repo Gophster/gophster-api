@@ -15,15 +15,14 @@ export class NotificationsGateway
 
   afterInit(server: any) {
     console.log('iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiinit');
-    this.notificaitonServer.emit('auth', { name: 'test' });
   }
 
   handleConnection(client: Socket) {
-    client.emit("connection",client.id)
+    // client.emit('auth');
   }
 
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-    return 'Hello world!';
+  @SubscribeMessage('auth')
+  handleMessage(client: any, payload: any) {
+    console.log(payload);
   }
 }

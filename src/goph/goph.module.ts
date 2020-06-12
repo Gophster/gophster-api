@@ -1,3 +1,4 @@
+import { NotificationModule } from './../notification/notification.module';
 import { UserService } from './../auth/services/user.service';
 import { Module } from '@nestjs/common';
 import { GophService } from './goph.service';
@@ -7,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GophRepository } from './goph.repoistory';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([GophRepository])],
+  imports: [AuthModule,TypeOrmModule.forFeature([GophRepository])],
   providers: [GophService],
   controllers: [GophController],
 })

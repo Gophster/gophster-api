@@ -1,3 +1,4 @@
+import { NotificationModule } from './../notification/notification.module';
 import { NotificationsGateway } from '../notification/notification.gateway';
 import { AuthModule } from './../auth/auth.module';
 import { FollowRepository } from './follow.repository';
@@ -10,8 +11,9 @@ import { FollowController } from './follow.controller';
   imports: [
     forwardRef(() => AuthModule),
     TypeOrmModule.forFeature([FollowRepository]),
+    NotificationModule
   ],
-  providers: [FollowService],
+  providers: [FollowService,NotificationsGateway],
   controllers: [FollowController],
   exports: [FollowService],
 })

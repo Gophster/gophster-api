@@ -1,3 +1,4 @@
+import { NotificationService } from './../notification/notification.service';
 import { Follow } from './follow.entity';
 import { UserService } from './../auth/services/user.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
@@ -6,13 +7,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
 
-
 @Injectable()
 export class FollowService {
   constructor(
     @InjectRepository(FollowRepository)
     public followRepository: FollowRepository,
     public userService: UserService,
+    public notificationService: NotificationService,
   ) {}
 
   async createFollow(reciverHandle: string, author: User) {
@@ -26,6 +27,11 @@ export class FollowService {
     }
     const follow = this.followRepository.create({ author, reciver });
     await follow.save();
+    await this.notificationService.createActionNotification(
+      reciver,
+      author,
+      'following',
+    );
 
     return follow;
   }
@@ -39,6 +45,11 @@ export class FollowService {
     if (!follow) {
       throw new BadRequestException('You are not following this person');
     }
+    await this.notificationService.createActionNotification(
+      reciver,
+      author,
+      'unfollowing',
+    );
     await follow.remove();
   }
 
@@ -81,5 +92,4 @@ export class FollowService {
 
     return followSuggestions;
   }
-
 }

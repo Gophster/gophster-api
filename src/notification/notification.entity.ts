@@ -30,4 +30,10 @@ export class Notification extends BaseEntity {
 
   @Column({ nullable: false, default: false })
   read: boolean;
+
+  @Column()
+  text: string;
+
+  @Column()
+  link: string;
 }

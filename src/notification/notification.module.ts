@@ -7,8 +7,12 @@ import { AuthModule } from '../auth/auth.module';
 import { NotificationRepository } from './notification.repistory';
 
 @Module({
-  imports: [forwardRef(() => AuthModule),TypeOrmModule.forFeature([NotificationRepository])],
+  imports: [
+    forwardRef(() => AuthModule),
+    TypeOrmModule.forFeature([NotificationRepository]),
+  ],
   providers: [NotificationService],
   controllers: [NotificationController],
+  exports: [NotificationService],
 })
 export class NotificationModule {}
