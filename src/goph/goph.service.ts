@@ -23,8 +23,6 @@ export class GophService {
     const goph = this.gophRepository.create({ ...gophData, author: user });
     await goph.save();
 
-    delete goph.author;
-
     return goph;
   }
 
