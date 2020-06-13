@@ -30,7 +30,7 @@ export class FollowService {
     await this.notificationService.createActionNotification(
       reciver,
       author,
-      'following',
+      'follow',
     );
 
     return follow;
@@ -48,7 +48,7 @@ export class FollowService {
     await this.notificationService.createActionNotification(
       reciver,
       author,
-      'unfollowing',
+      'unfollow',
     );
     await follow.remove();
   }

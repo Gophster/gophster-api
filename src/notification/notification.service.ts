@@ -43,20 +43,30 @@ export class NotificationService {
       .set({
         read: true,
       })
-      .andWhere('id = :id', { id: user.id })
+      .where('user = :id', { id: user.id })
       .andWhere('read = :not', { not: false })
       .execute();
 
     return { success: true };
   }
 
-  async createActionNotification(user: User, initiator: User, action: string) {
+  async createActionNotification(
+    user: User,
+    initiator: User,
+    action: 'follow' | 'unfollow',
+  ) {
+    let message = 'started following you';
+
+    if (action == 'unfollow') {
+      message = 'unfollowed you';
+    }
+
     await this.notificationRepository
       .create({
         user,
         initiator,
         read: false,
-        text: `@${initiator.handle} started ${action} you`,
+        text: `<b>@${initiator.handle}<b/> ${message}`,
         link: `/user/${initiator.handle}`,
       })
       .save();
@@ -68,7 +78,7 @@ export class NotificationService {
         user,
         initiator,
         read: false,
-        text: `@${initiator.handle} added new goph`,
+        text: `@${initiator.handle} added a new goph`,
         link: `/gophs/${goph.id}`,
       })
       .save();
