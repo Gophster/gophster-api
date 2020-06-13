@@ -66,7 +66,7 @@ export class NotificationService {
         user,
         initiator,
         read: false,
-        text: `<b>@${initiator.handle}<b/> ${message}`,
+        text: `<b>@${initiator.handle}</b> ${message}`,
         link: `/user/${initiator.handle}`,
       })
       .save();
