@@ -10,5 +10,6 @@ import { GophRepository } from './goph.repoistory';
   imports: [AuthModule, TypeOrmModule.forFeature([GophRepository])],
   providers: [GophService],
   controllers: [GophController],
+  exports: [GophService],
 })
 export class GophModule {}

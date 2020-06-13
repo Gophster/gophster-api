@@ -7,6 +7,7 @@ import { GophModule } from './goph/goph.module';
 import { FollowModule } from './follow/follow.module';
 
 import * as typeOrmConfig from 'config/typeorm.config';
+import { ReplyModule } from './reply/reply.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import * as typeOrmConfig from 'config/typeorm.config';
     AuthModule,
     GophModule,
     FollowModule,
+    ReplyModule,
   ],
 })
 export class AppModule {}

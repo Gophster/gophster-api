@@ -95,5 +95,4 @@ export class FollowService {
 
     return followSuggestions;
   }
-
 }

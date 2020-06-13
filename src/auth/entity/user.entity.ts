@@ -11,6 +11,7 @@ import { Exclude, Transform } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
 
 import { Goph } from '../../goph/goph.entity';
+import { Reply } from 'src/reply/reply.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -48,7 +49,6 @@ export class User extends BaseEntity {
   salt: string;
 
   @OneToMany(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type => Goph,
     goph => goph.author,
   )
