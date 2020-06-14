@@ -60,6 +60,10 @@ export class User extends BaseEntity {
   @Column({ default: '0' })
   followersAmount: number;
 
+  @Column({ nullable: true })
+  @Exclude()
+  socketId: string;
+
   @BeforeInsert()
   async hashPasswordAndGenSalt() {
     this.salt = await bcrypt.genSalt();
