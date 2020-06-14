@@ -7,7 +7,6 @@ import {
   Post,
   Get,
   Body,
-  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
