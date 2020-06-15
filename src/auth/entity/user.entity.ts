@@ -51,6 +51,7 @@ export class User extends BaseEntity {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type => Goph,
     goph => goph.author,
+    { eager: false },
   )
   gophs: Promise<Goph[]>;
 

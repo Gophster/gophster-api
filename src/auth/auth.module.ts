@@ -14,6 +14,7 @@ import { UserService } from './services/user.service';
 
 import * as path from 'path';
 import * as fs from 'fs';
+
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -35,6 +36,6 @@ import * as fs from 'fs';
   ],
   controllers: [AuthController, UserController],
   providers: [AuthService, JwtStrategy, UserService],
-  exports: [PassportModule, JwtStrategy, UserService],
+  exports: [PassportModule, JwtStrategy, UserService,AuthService],
 })
 export class AuthModule {}

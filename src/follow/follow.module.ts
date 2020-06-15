@@ -1,5 +1,4 @@
 import { NotificationModule } from './../notification/notification.module';
-import { NotificationsGateway } from '../notification/notification.gateway';
 import { AuthModule } from './../auth/auth.module';
 import { FollowRepository } from './follow.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,7 +12,7 @@ import { FollowController } from './follow.controller';
     TypeOrmModule.forFeature([FollowRepository]),
     NotificationModule
   ],
-  providers: [FollowService,NotificationsGateway],
+  providers: [FollowService],
   controllers: [FollowController],
   exports: [FollowService],
 })

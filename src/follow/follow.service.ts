@@ -1,21 +1,25 @@
-import { NotificationsGateway } from './../notification/notification.gateway';
 import { NotificationService } from './../notification/notification.service';
 import { Follow } from './follow.entity';
 import { UserService } from './../auth/services/user.service';
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  ClassSerializerInterceptor,
+  UseInterceptors,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
 
 @Injectable()
+@UseInterceptors(ClassSerializerInterceptor)
 export class FollowService {
   constructor(
     @InjectRepository(FollowRepository)
     public followRepository: FollowRepository,
     public userService: UserService,
     public notificationService: NotificationService,
-    public notificationGateway: NotificationsGateway
   ) {}
 
   async createFollow(reciverHandle: string, author: User) {
@@ -29,7 +33,7 @@ export class FollowService {
     }
     const follow = this.followRepository.create({ author, reciver });
     await follow.save();
-    const notification = await this.notificationService.createActionNotification(
+    await this.notificationService.createActionNotification(
       reciver,
       author,
       'follow',

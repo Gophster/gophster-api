@@ -1,3 +1,4 @@
+import { NotificationGateway } from './notification.gateway';
 import { Goph } from 'src/goph/goph.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,12 +11,14 @@ import {
   paginate,
 } from 'nestjs-typeorm-paginate';
 import { User } from '../auth/entity/user.entity';
+import { classToPlain } from 'class-transformer';
 
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectRepository(Notification)
     private notificationRepository: NotificationRepository,
+    private notificationGateway: NotificationGateway,
   ) {}
 
   async paginateUserNotifications(
@@ -61,7 +64,7 @@ export class NotificationService {
       message = 'unfollowed you';
     }
 
-    await this.notificationRepository
+    const notification = await this.notificationRepository
       .create({
         user,
         initiator,
@@ -70,6 +73,17 @@ export class NotificationService {
         link: `/user/${initiator.handle}`,
       })
       .save();
+
+    if (user.socketId !== null) {
+      console.log(user.socketId);
+
+      await this.notificationGateway.notificaitonServer
+        .to(user.socketId)
+        .emit('notification', {
+          data: classToPlain(notification),
+        });
+      console.log('aba aq tu moxval');
+    }
   }
 
   async createNewGophNotification(user: User, initiator: User, goph: Goph) {

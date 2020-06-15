@@ -1,28 +1,40 @@
+import { JwtPayload } from './../auth/interfaces/jwt-payload.interface';
+import { AuthService } from './../auth/services/auth.service';
 import {
   SubscribeMessage,
   WebSocketGateway,
-  OnGatewayInit,
   WebSocketServer,
-  OnGatewayConnection,
-  WsResponse,
 } from '@nestjs/websockets';
-import { Server, Client, Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
+import * as jwt from 'jsonwebtoken';
+
+import * as path from 'path';
+import * as fs from 'fs';
 
 @WebSocketGateway()
-export class NotificationsGateway
-  implements OnGatewayInit, OnGatewayConnection {
+export class NotificationGateway {
   @WebSocketServer() notificaitonServer: Server;
 
-  afterInit(server: any) {
-    console.log('iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiinit');
-  }
-
-  handleConnection(client: Socket) {
-    // client.emit('auth');
-  }
+  constructor(private authService: AuthService) {}
 
   @SubscribeMessage('auth')
-  handleMessage(client: any, payload: any) {
-    console.log(payload);
+  handleMessage(client: Socket, payload: any) {
+    const { token } = payload;
+    try {
+      const result = jwt.verify(
+        token,
+        fs.readFileSync(path.join(process.cwd(), 'credentials/pub.pem')),
+        {
+          algorithms: ['RS256'],
+        },
+      );
+
+      if (typeof result === 'object') {
+        const jwtPayload = result as JwtPayload;
+        this.authService.setSocketIdByHandle(jwtPayload.handle, client.id);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
