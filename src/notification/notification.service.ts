@@ -74,24 +74,24 @@ export class NotificationService {
 
       if (data.action == 'unfollow') {
         message = 'unfollowed you';
+      }
+      
+      const notification = await this.notificationRepository
+        .create({
+          user,
+          initiator,
+          read: false,
+          text: `<b>@${initiator.handle}</b> ${message}`,
+          link: `/user/${initiator.handle}`,
+        })
+        .save();
 
-        const notification = await this.notificationRepository
-          .create({
-            user,
-            initiator,
-            read: false,
-            text: `<b>@${initiator.handle}</b> ${message}`,
-            link: `/user/${initiator.handle}`,
-          })
-          .save();
-
-        if (user.socketId !== null) {
-          await this.notificationGateway.notificaitonServer
-            .to(user.socketId)
-            .emit('notification', {
-              data: classToPlain(notification),
-            });
-        }
+      if (user.socketId !== null) {
+        await this.notificationGateway.notificaitonServer
+          .to(user.socketId)
+          .emit('notification', {
+            data: classToPlain(notification),
+          });
       }
     }
   }
