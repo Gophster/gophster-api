@@ -20,5 +20,6 @@ import { BullModule } from '@nestjs/bull';
   ],
   providers: [GophService],
   controllers: [GophController],
+  exports: [GophService],
 })
 export class GophModule {}

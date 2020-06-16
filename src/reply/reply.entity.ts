@@ -6,13 +6,12 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
 } from 'typeorm';
 import { User } from '../auth/entity/user.entity';
-import { Reply } from 'src/reply/reply.entity';
+import { Goph } from '../goph/goph.entity';
 
 @Entity()
-export class Goph extends BaseEntity {
+export class Reply extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -25,18 +24,13 @@ export class Goph extends BaseEntity {
   @Column()
   text: string;
 
-  @ManyToOne(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type => User,
-    user => user.gophs,
-    { eager: true },
-  )
+  @ManyToOne(type => User, { eager: true })
   author: User;
 
-  @OneToMany(
-    type => Reply,
-    replies => replies.goph,
+  @ManyToOne(
+    type => Goph,
+    goph => goph.replies,
     { eager: false },
   )
-  replies: Promise<Reply[]>;
+  goph: Goph;
 }
