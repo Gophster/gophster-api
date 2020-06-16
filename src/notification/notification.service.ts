@@ -100,7 +100,6 @@ export class NotificationService {
   @Process('goph')
   async createNewGophNotification(job: Job<any>) {
     const { data } = job;
-    console.log('1');
 
     const user = await this.userRepository.findOne(data.user);
     const recivers = await this.userRepository.manager.connection
