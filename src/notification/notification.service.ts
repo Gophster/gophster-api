@@ -1,8 +1,8 @@
 import { UserRepository } from './../auth/entity/user.repository';
 import { NotificationGateway } from './notification.gateway';
-import { Goph } from 'src/goph/goph.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { In } from 'typeorm';
 
 import { NotificationRepository } from './notification.repistory';
 import { Notification } from './notification.entity';
@@ -15,6 +15,7 @@ import { User } from '../auth/entity/user.entity';
 import { classToPlain } from 'class-transformer';
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
+import { Follow } from '../follow/follow.entity';
 
 @Injectable()
 @Processor('notification')
@@ -75,7 +76,7 @@ export class NotificationService {
       if (data.action == 'unfollow') {
         message = 'unfollowed you';
       }
-      
+
       const notification = await this.notificationRepository
         .create({
           user,
@@ -96,15 +97,49 @@ export class NotificationService {
     }
   }
 
-  async createNewGophNotification(user: User, initiator: User, goph: Goph) {
-    await this.notificationRepository
-      .create({
-        user,
-        initiator,
-        read: false,
-        text: `@${initiator.handle} added a new goph`,
-        link: `/gophs/${goph.id}`,
-      })
-      .save();
+  @Process('goph')
+  async createNewGophNotification(job: Job<any>) {
+    const { data } = job;
+    console.log('1');
+
+    const user = await this.userRepository.findOne(data.user);
+    const recivers = await this.userRepository.manager.connection
+      .createQueryBuilder()
+      .select('follow.author')
+      .from(Follow, 'follow')
+      .where('follow.reciver = :userId')
+      .setParameter('userId', user.id)
+      .execute();
+
+
+    let ids = [];
+    if (recivers instanceof Array) {
+      ids = recivers.map(({ authorId }) => authorId);
+    }
+
+    const users = await this.userRepository.find({
+      where: { id: In(ids) },
+    });
+
+    for (const reciver of users) {
+      const notification = await this.notificationRepository
+        .create({
+          user: reciver,
+          initiator: user,
+          read: false,
+          text: `<b>@${user.handle}</b> added a new goph`,
+          link: `/goph/${data.goph}`,
+        })
+        .save();
+
+      if (reciver.socketId !== null) {
+
+        await this.notificationGateway.notificaitonServer
+          .to(reciver.socketId)
+          .emit('notification', {
+            data: classToPlain(notification),
+          });
+      }
+    }
   }
 }
