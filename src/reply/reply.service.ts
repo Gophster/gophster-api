@@ -52,12 +52,19 @@ export class ReplyService {
     updatedReply: ReplyDto,
     user: User,
   ): Promise<Reply> {
-    const gophData = await this.gophService.getSinlgeGophById(updatedReply.goph);
+    const gophData = await this.gophService.getSinlgeGophById(
+      updatedReply.goph,
+    );
     const reply = await this.replyRepository.findOne(id);
     if (!reply) {
       throw new NotFoundException();
     }
-    await this.replyRepository.update(id,{id: id, text: updatedReply.text, goph: gophData,author: user});
+    await this.replyRepository.update(id, {
+      id: id,
+      text: updatedReply.text,
+      goph: gophData,
+      author: user,
+    });
     await reply.reload();
     return reply;
   }

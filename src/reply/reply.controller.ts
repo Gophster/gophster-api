@@ -55,7 +55,9 @@ export class ReplyController {
 
   @Get(':id')
   @UseInterceptors(ClassSerializerInterceptor)
-  showSingleReply(@Param('id', new ParseUUIDPipe()) id: string): Promise<Reply> {
+  showSingleReply(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<Reply> {
     return this.replyService.getSingleReplyById(id);
   }
 

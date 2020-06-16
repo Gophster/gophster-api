@@ -24,10 +24,7 @@ export class Reply extends BaseEntity {
   @Column()
   text: string;
 
-  @ManyToOne(
-    type => User,
-    { eager: false },
-  )
+  @ManyToOne(type => User, { eager: false })
   author: User;
 
   @ManyToOne(
