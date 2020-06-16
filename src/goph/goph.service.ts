@@ -31,7 +31,6 @@ export class GophService {
       goph: goph.id,
     });
 
-
     return goph;
   }
 

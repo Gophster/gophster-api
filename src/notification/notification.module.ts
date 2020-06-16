@@ -12,7 +12,7 @@ import { NotificationRepository } from './notification.repistory';
 @Module({
   imports: [
     forwardRef(() => AuthModule),
-    TypeOrmModule.forFeature([NotificationRepository,UserRepository]),
+    TypeOrmModule.forFeature([NotificationRepository, UserRepository]),
     BullModule.registerQueue({
       name: 'notification',
       redis: {

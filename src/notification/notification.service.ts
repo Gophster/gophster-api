@@ -110,7 +110,6 @@ export class NotificationService {
       .setParameter('userId', user.id)
       .execute();
 
-
     let ids = [];
     if (recivers instanceof Array) {
       ids = recivers.map(({ authorId }) => authorId);
@@ -132,7 +131,6 @@ export class NotificationService {
         .save();
 
       if (reciver.socketId !== null) {
-
         await this.notificationGateway.notificaitonServer
           .to(reciver.socketId)
           .emit('notification', {
