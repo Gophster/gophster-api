@@ -26,9 +26,10 @@ export class Goph extends BaseEntity {
   text: string;
 
   @ManyToOne(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type => User,
     user => user.gophs,
-    { eager: false },
+    { eager: true },
   )
   author: User;
 

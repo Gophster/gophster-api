@@ -7,22 +7,17 @@ import {
   Post,
   Get,
   Body,
-  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
   UseInterceptors,
   ClassSerializerInterceptor,
   HttpCode,
-  NotFoundException,
-  Param,
 } from '@nestjs/common';
 
 import { FollowService } from './follow.service';
 import { FollowDto } from './dto/follow.dto';
 import { ExtractUser } from './../auth/utils/extract-user.docorator';
-import { Goph } from 'src/goph/goph.entity';
-import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('actions')
 @UseGuards(AuthGuard())

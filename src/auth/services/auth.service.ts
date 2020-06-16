@@ -70,4 +70,20 @@ export class AuthService {
       accessToken,
     };
   }
+
+  async setSocketIdByHandle(
+    handle: string,
+    socketId: string,
+  ): Promise<boolean> {
+    try {
+      const result = await this.userRepository.update({ handle }, { socketId });
+
+      if (result) {
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+    return false;
+  }
 }

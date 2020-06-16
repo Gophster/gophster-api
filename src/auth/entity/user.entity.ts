@@ -51,6 +51,7 @@ export class User extends BaseEntity {
   @OneToMany(
     type => Goph,
     goph => goph.author,
+    { eager: false },
   )
   gophs: Promise<Goph[]>;
 
@@ -59,6 +60,10 @@ export class User extends BaseEntity {
 
   @Column({ default: '0' })
   followersAmount: number;
+
+  @Column({ nullable: true })
+  @Exclude()
+  socketId: string;
 
   @BeforeInsert()
   async hashPasswordAndGenSalt() {

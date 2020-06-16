@@ -10,19 +10,26 @@ import {
   IPaginationOptions,
 } from 'nestjs-typeorm-paginate';
 import { Follow } from '../follow/follow.entity';
+import { In } from 'typeorm';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class GophService {
   constructor(
     @InjectRepository(GophRepository)
     public gophRepository: GophRepository,
+    @InjectQueue('notification') private notificationQueue: Queue,
   ) {}
 
   async createGoph(gophData: GophDto, user: User): Promise<Goph> {
     const goph = this.gophRepository.create({ ...gophData, author: user });
     await goph.save();
 
-    delete goph.author;
+    await this.notificationQueue.add('goph', {
+      user: user.id,
+      goph: goph.id,
+    });
 
     return goph;
   }
@@ -88,20 +95,22 @@ export class GophService {
     options: IPaginationOptions,
     user: User,
   ): Promise<Pagination<Goph>> {
-    const newsFeedGophs = this.gophRepository
-      .createQueryBuilder('goph')
-      .where(qb => {
-        const subQuery = qb
-          .subQuery()
-          .select('follow.reciver')
-          .from(Follow, 'follow')
-          .where('follow.author = :userId')
-          .getQuery();
-
-        return `goph.author IN (${subQuery},'${user.id}')`;
-      })
+    const recivers = await this.gophRepository.manager.connection
+      .createQueryBuilder()
+      .select('follow.reciver')
+      .from(Follow, 'follow')
+      .where('follow.author = :userId')
       .setParameter('userId', user.id)
-      .orderBy('goph.created', 'DESC');
-    return paginate<Goph>(newsFeedGophs, options);
+      .execute();
+
+    let ids = [];
+    if (recivers instanceof Array) {
+      ids = recivers.map(({ reciverId }) => reciverId);
+    }
+
+    return paginate<Goph>(this.gophRepository, options, {
+      where: { author: In([...ids, user.id]) },
+      order: { created: 'DESC' },
+    });
   }
 }
