@@ -1,21 +1,30 @@
-import { JwtPayload } from './../auth/interfaces/jwt-payload.interface';
-import { AuthService } from './../auth/services/auth.service';
 import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  OnGatewayInit,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
+import { Logger } from '@nestjs/common';
+
+import { NotificationModule } from './notification.module';
+import { JwtPayload } from './../auth/interfaces/jwt-payload.interface';
+import { AuthService } from './../auth/services/auth.service';
 
 import * as path from 'path';
 import * as fs from 'fs';
 
 @WebSocketGateway()
-export class NotificationGateway {
-  @WebSocketServer() notificaitonServer: Server;
+export class NotificationGateway implements OnGatewayInit {
+  @WebSocketServer() public notificaitonServer: Server;
+  private readonly logger = new Logger(NotificationModule.name);
 
   constructor(private authService: AuthService) {}
+
+  afterInit() {
+    this.logger.log('Notification Gateway is initialized  🚀');
+  }
 
   @SubscribeMessage('auth')
   handleMessage(client: Socket, payload: any) {

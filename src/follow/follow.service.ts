@@ -1,6 +1,3 @@
-import { NotificationService } from './../notification/notification.service';
-import { Follow } from './follow.entity';
-import { UserService } from './../auth/services/user.service';
 import {
   Injectable,
   BadRequestException,
@@ -8,9 +5,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
-import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
+import { User } from './../auth/entity/user.entity';
+import { UserService } from './../auth/services/user.service';
+import { Follow } from './follow.entity';
+import { NotificationService } from './../notification/notification.service';
 
 @Injectable()
 @UseInterceptors(ClassSerializerInterceptor)
@@ -20,6 +22,7 @@ export class FollowService {
     public followRepository: FollowRepository,
     public userService: UserService,
     public notificationService: NotificationService,
+    @InjectQueue('notification') private notificationQueue: Queue,
   ) {}
 
   async createFollow(reciverHandle: string, author: User) {
@@ -33,11 +36,12 @@ export class FollowService {
     }
     const follow = this.followRepository.create({ author, reciver });
     await follow.save();
-    await this.notificationService.createActionNotification(
-      reciver,
-      author,
-      'follow',
-    );
+
+    await this.notificationQueue.add('action', {
+      reciver: reciver.id,
+      author: author.id,
+      action: 'follow',
+    });
 
     return follow;
   }
@@ -51,11 +55,13 @@ export class FollowService {
     if (!follow) {
       throw new BadRequestException('You are not following this person');
     }
-    await this.notificationService.createActionNotification(
-      reciver,
-      author,
-      'unfollow',
-    );
+
+    await this.notificationQueue.add('action', {
+      reciver: reciver.id,
+      author: author.id,
+      action: 'unfollow',
+    });
+
     await follow.remove();
   }
 

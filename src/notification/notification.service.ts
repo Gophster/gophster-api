@@ -1,3 +1,4 @@
+import { UserRepository } from './../auth/entity/user.repository';
 import { NotificationGateway } from './notification.gateway';
 import { Goph } from 'src/goph/goph.entity';
 import { Injectable } from '@nestjs/common';
@@ -12,12 +13,16 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { User } from '../auth/entity/user.entity';
 import { classToPlain } from 'class-transformer';
+import { Processor, Process } from '@nestjs/bull';
+import { Job } from 'bull';
 
 @Injectable()
+@Processor('notification')
 export class NotificationService {
   constructor(
     @InjectRepository(Notification)
     private notificationRepository: NotificationRepository,
+    private userRepository: UserRepository,
     private notificationGateway: NotificationGateway,
   ) {}
 
@@ -53,36 +58,41 @@ export class NotificationService {
     return { success: true };
   }
 
-  async createActionNotification(
-    user: User,
-    initiator: User,
-    action: 'follow' | 'unfollow',
-  ) {
-    let message = 'started following you';
+  @Process('action')
+  async action(job: Job<any>) {
+    const { data } = job;
 
-    if (action == 'unfollow') {
-      message = 'unfollowed you';
-    }
+    const user = await this.userRepository.findOne({
+      where: { id: data.reciver },
+    });
+    const initiator = await this.userRepository.findOne({
+      where: { id: data.author },
+    });
 
-    const notification = await this.notificationRepository
-      .create({
-        user,
-        initiator,
-        read: false,
-        text: `<b>@${initiator.handle}</b> ${message}`,
-        link: `/user/${initiator.handle}`,
-      })
-      .save();
+    if (user && initiator) {
+      let message = 'started following you';
 
-    if (user.socketId !== null) {
-      console.log(user.socketId);
+      if (data.action == 'unfollow') {
+        message = 'unfollowed you';
 
-      await this.notificationGateway.notificaitonServer
-        .to(user.socketId)
-        .emit('notification', {
-          data: classToPlain(notification),
-        });
-      console.log('aba aq tu moxval');
+        const notification = await this.notificationRepository
+          .create({
+            user,
+            initiator,
+            read: false,
+            text: `<b>@${initiator.handle}</b> ${message}`,
+            link: `/user/${initiator.handle}`,
+          })
+          .save();
+
+        if (user.socketId !== null) {
+          await this.notificationGateway.notificaitonServer
+            .to(user.socketId)
+            .emit('notification', {
+              data: classToPlain(notification),
+            });
+        }
+      }
     }
   }
 
