@@ -11,17 +11,25 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { Follow } from '../follow/follow.entity';
 import { In } from 'typeorm';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class GophService {
   constructor(
     @InjectRepository(GophRepository)
     public gophRepository: GophRepository,
+    @InjectQueue('notification') private notificationQueue: Queue,
   ) {}
 
   async createGoph(gophData: GophDto, user: User): Promise<Goph> {
     const goph = this.gophRepository.create({ ...gophData, author: user });
     await goph.save();
+
+    await this.notificationQueue.add('goph', {
+      user: user.id,
+      goph: goph.id,
+    });
 
     return goph;
   }

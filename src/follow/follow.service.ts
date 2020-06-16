@@ -1,32 +1,28 @@
-import { UserRepository } from './../auth/entity/user.repository';
-import { Follow } from './follow.entity';
-import { UserService } from './../auth/services/user.service';
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { InjectRepository, handleRetry } from '@nestjs/typeorm';
+import {
+  Injectable,
+  BadRequestException,
+  ClassSerializerInterceptor,
+  UseInterceptors,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
-import { User } from './../auth/entity/user.entity';
 import { FollowRepository } from './follow.repository';
-import {
-  createQueryBuilder,
-  getRepository,
-  QueryBuilder,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
-import { Goph } from 'src/goph/goph.entity';
-
-import {
-  paginate,
-  Pagination,
-  IPaginationOptions,
-} from 'nestjs-typeorm-paginate';
+import { User } from './../auth/entity/user.entity';
+import { UserService } from './../auth/services/user.service';
+import { Follow } from './follow.entity';
+import { NotificationService } from './../notification/notification.service';
 
 @Injectable()
+@UseInterceptors(ClassSerializerInterceptor)
 export class FollowService {
   constructor(
     @InjectRepository(FollowRepository)
     public followRepository: FollowRepository,
     public userService: UserService,
+    public notificationService: NotificationService,
+    @InjectQueue('notification') private notificationQueue: Queue,
   ) {}
 
   async createFollow(reciverHandle: string, author: User) {
@@ -41,6 +37,12 @@ export class FollowService {
     const follow = this.followRepository.create({ author, reciver });
     await follow.save();
 
+    await this.notificationQueue.add('action', {
+      reciver: reciver.id,
+      author: author.id,
+      action: 'follow',
+    });
+
     return follow;
   }
 
@@ -53,6 +55,13 @@ export class FollowService {
     if (!follow) {
       throw new BadRequestException('You are not following this person');
     }
+
+    await this.notificationQueue.add('action', {
+      reciver: reciver.id,
+      author: author.id,
+      action: 'unfollow',
+    });
+
     await follow.remove();
   }
 
@@ -95,5 +104,4 @@ export class FollowService {
 
     return followSuggestions;
   }
-
 }
