@@ -85,10 +85,9 @@ export class ReplyService {
     options: IPaginationOptions,
     gophIdentificator: string,
   ): Promise<Pagination<Reply>> {
-    const goph = this.gophService.gophRepository.findOne(gophIdentificator);
     return paginate<Reply>(this.replyRepository, options, {
       where: {
-        goph,
+        goph:gophIdentificator,
       },
       order: {
         created: 'DESC',
