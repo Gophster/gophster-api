@@ -87,7 +87,7 @@ export class ReplyService {
   ): Promise<Pagination<Reply>> {
     return paginate<Reply>(this.replyRepository, options, {
       where: {
-        goph:gophIdentificator,
+        goph: gophIdentificator,
       },
       order: {
         created: 'DESC',
