@@ -3,6 +3,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
   OnGatewayInit,
+  OnGatewayDisconnect,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
@@ -16,7 +17,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 @WebSocketGateway()
-export class NotificationGateway implements OnGatewayInit {
+export class NotificationGateway implements OnGatewayInit, OnGatewayDisconnect {
   @WebSocketServer() public notificaitonServer: Server;
   private readonly logger = new Logger(NotificationModule.name);
 
@@ -24,6 +25,11 @@ export class NotificationGateway implements OnGatewayInit {
 
   afterInit() {
     this.logger.log('Notification Gateway is initialized  🚀');
+  }
+
+  async handleDisconnect(client: Socket) {
+    this.logger.log(`Client with socket id: ${client.id} has been desiconected`)
+    await this.authService.removeSocketId(client.id);
   }
 
   @SubscribeMessage('auth')

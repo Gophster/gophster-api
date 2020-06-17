@@ -86,4 +86,21 @@ export class AuthService {
     }
     return false;
   }
+
+  async removeSocketId(socketId: string): Promise<boolean> {
+    try {
+      const result = await this.userRepository.update(
+        { socketId },
+        { socketId: null },
+      );
+
+      if (result) {
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+
+    return false;
+  }
 }
