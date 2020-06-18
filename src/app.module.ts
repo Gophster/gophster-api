@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { BullModule } from '@nestjs/bull';
+import { MessengerModule } from './messenger/messenger.module';
 
 import { AuthModule } from './auth/auth.module';
 import { GophModule } from './goph/goph.module';
@@ -19,6 +19,7 @@ import { ReplyModule } from './reply/reply.module';
     FollowModule,
     ReplyModule,
     NotificationModule,
+    MessengerModule,
   ],
 })
 export class AppModule {}

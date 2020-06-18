@@ -16,7 +16,7 @@ import { AuthService } from './../auth/services/auth.service';
 import * as path from 'path';
 import * as fs from 'fs';
 
-@WebSocketGateway()
+@WebSocketGateway({ namespace: 'notifications' })
 export class NotificationGateway implements OnGatewayInit, OnGatewayDisconnect {
   @WebSocketServer() public notificaitonServer: Server;
   private readonly logger = new Logger(NotificationModule.name);
@@ -28,7 +28,9 @@ export class NotificationGateway implements OnGatewayInit, OnGatewayDisconnect {
   }
 
   async handleDisconnect(client: Socket) {
-    this.logger.log(`Client with socket id: ${client.id} has been desiconected`)
+    this.logger.log(
+      `Client with socket id: ${client.id} has been desiconected`,
+    );
     await this.authService.removeSocketId(client.id);
   }
 
