@@ -64,10 +64,6 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   @Exclude()
   socketId: string;
-
-  @Column({ nullable: true })
-  @Exclude()
-  messengerId: string;
   
   @BeforeInsert()
   async hashPasswordAndGenSalt() {

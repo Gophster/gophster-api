@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
-import { AuthService } from '../auth/services/auth.service';
-import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
-import { User } from '../auth/entity/user.entity';
+import { AuthService } from './auth.service';
+import { JwtPayload } from '../interfaces/jwt-payload.interface';
+import { User } from '../entity/user.entity';
 
 import * as path from 'path';
 import * as fs from 'fs';

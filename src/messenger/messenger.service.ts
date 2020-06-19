@@ -1,9 +1,4 @@
-import { MessengerGateway } from './messenger.gateway';
-import { UserService } from './../auth/services/user.service';
-import { User } from './../auth/entity/user.entity';
-import { MessengerRepository } from './messenger.repository';
-import { Message } from './messenger.entity';
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import {
   IPaginationOptions,
   Pagination,
@@ -11,16 +6,20 @@ import {
 } from 'nestjs-typeorm-paginate';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In } from 'typeorm';
-import { classToPlain } from 'class-transformer';
 
+import { ApplicationGateway } from '../notification/application.gateway';
+import { UserService } from './../auth/services/user.service';
+import { User } from './../auth/entity/user.entity';
+import { MessengerRepository } from './messenger.repository';
+import { Message } from './messenger.entity';
 @Injectable()
 export class MessengerService {
   constructor(
     @InjectRepository(MessengerRepository)
     public messengerRepository: MessengerRepository,
     private userService: UserService,
-    @Inject(forwardRef(() => MessengerGateway))
-    private messengerGateway: MessengerGateway,
+    @Inject(forwardRef(() => ApplicationGateway))
+    private appGateway: ApplicationGateway,
   ) {}
 
   async getUserConversation(
@@ -84,11 +83,11 @@ export class MessengerService {
       })
       .save();
 
-    if (reciver.messengerId) {
-      await this.messengerGateway.messengerServer
-        .to(reciver.messengerId)
-        .emit('new-message', classToPlain(message));
-    }
+    // if (reciver.socketId) {
+    //   await this.appGateway.server
+    //     .to(reciver.socketId)
+    //     .emit('new-message', classToPlain(message));
+    // }
 
     return message;
   }

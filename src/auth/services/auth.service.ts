@@ -103,40 +103,4 @@ export class AuthService {
 
     return false;
   }
-
-  async setMessengerIdByHandle(
-    handle: string,
-    messengerId: string,
-  ): Promise<boolean> {
-    try {
-      const result = await this.userRepository.update(
-        { handle },
-        { messengerId },
-      );
-
-      if (result) {
-        return true;
-      }
-    } catch (e) {
-      return false;
-    }
-    return false;
-  }
-
-  async removeMessengerId(messengerId: string): Promise<boolean> {
-    try {
-      const result = await this.userRepository.update(
-        { messengerId },
-        { messengerId: null },
-      );
-
-      if (result) {
-        return true;
-      }
-    } catch (e) {
-      return false;
-    }
-
-    return false;
-  }
 }
