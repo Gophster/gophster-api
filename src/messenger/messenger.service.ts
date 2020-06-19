@@ -99,7 +99,7 @@ export class MessengerService {
   ): Promise<Pagination<User>> {
     const recivers = await this.messengerRepository
       .createQueryBuilder('message')
-      .select('message.reciver')
+      .select('message.reciver, message.author')
       .where('message.author = :author', { author: user.id })
       .orWhere('message.reciver = :author', { author: user.id })
       .distinct(true)
@@ -107,7 +107,22 @@ export class MessengerService {
 
     let ids = [];
     if (recivers instanceof Array) {
-      ids = [...ids, ...recivers.map(({ reciverId }) => reciverId)];
+      ids = [
+        ...ids,
+        ...recivers.map(({ reciverId }) => {
+          if (reciverId !== user.id) {
+            return reciverId;
+          }
+        }),
+      ];
+      ids = [
+        ...ids,
+        ...recivers.map(({ authorId }) => {
+          if (authorId !== user.id) {
+            return authorId;
+          }
+        }),
+      ];
     }
 
     if (!ids) {
