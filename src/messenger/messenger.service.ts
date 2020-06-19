@@ -125,11 +125,9 @@ export class MessengerService {
       ];
     }
 
-
-
     return paginate<User>(this.userService.userRepository, options, {
       where: {
-        id: ids.length ? In(ids) : '11111111-1111-1111-1111-1111111111',
+        id: ids.length ? In(ids) : '6395851c-baca-41de-bd98-8cdf7dc45c5a',
       },
     });
   }
