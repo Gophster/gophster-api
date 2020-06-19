@@ -34,7 +34,7 @@ export class MessengerService {
         reciver: In([user.id, pair]),
       },
       order: {
-        created: 'DESC',
+        created: 'ASC',
       },
     });
   }

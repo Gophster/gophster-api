@@ -22,6 +22,7 @@ export class MessengerController {
   constructor(private messengerService: MessengerService) {}
 
   @Get('conversation/users')
+  @UseInterceptors(ClassSerializerInterceptor)
   async getConversationUsers(
     @ExtractUser() user: User,
     @Query('page') page = 1,
