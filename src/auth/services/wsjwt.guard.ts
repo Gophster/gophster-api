@@ -12,8 +12,7 @@ export class WsJwtGuard implements CanActivate {
   constructor(private authService: AuthService) {}
 
   async canActivate(context: ExecutionContext) {
-    const client = context.switchToWs().getClient();
-    const token = client.handshake.query.token;
+    const token = context.switchToWs().getData().token;
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
     const jwtPayload: JwtPayload = <JwtPayload>jwt.verify(
       token,
