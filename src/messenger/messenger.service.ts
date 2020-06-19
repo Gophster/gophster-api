@@ -12,6 +12,7 @@ import { UserService } from './../auth/services/user.service';
 import { User } from './../auth/entity/user.entity';
 import { MessengerRepository } from './messenger.repository';
 import { Message } from './messenger.entity';
+import { classToPlain } from 'class-transformer';
 @Injectable()
 export class MessengerService {
   constructor(
@@ -83,12 +84,33 @@ export class MessengerService {
       })
       .save();
 
-    // if (reciver.socketId) {
-    //   await this.appGateway.server
-    //     .to(reciver.socketId)
-    //     .emit('new-message', classToPlain(message));
-    // }
+    if (reciver.socketId) {
+      await this.appGateway.server
+        .to(reciver.socketId)
+        .emit('new-message', classToPlain(message));
+    }
 
     return message;
+  }
+
+  async getConversationUsers(
+    user: User,
+    options: IPaginationOptions,
+  ): Promise<Pagination<User>> {
+    const recivers = await this.messengerRepository
+      .createQueryBuilder('message')
+      .select('message.reciver')
+      .where('message.author = :author', { author: user.id })
+      .distinct(true)
+      .execute();
+
+    let ids = [];
+    if (recivers instanceof Array) {
+      ids = recivers.map(({ reciverId }) => reciverId);
+    }
+
+    return paginate<User>(this.userService.userRepository, options, {
+      where: { id: In(ids) },
+    });
   }
 }

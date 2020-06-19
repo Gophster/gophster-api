@@ -21,7 +21,22 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 export class MessengerController {
   constructor(private messengerService: MessengerService) {}
 
-  @Get('conversation/:id')
+  @Get('conversation/users')
+  async getConversationUsers(
+    @ExtractUser() user: User,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    limit = limit > 100 ? 100 : limit;
+
+    return this.messengerService.getConversationUsers(user, {
+      page,
+      limit,
+      route: `${process.env.API_URL}/messenger/conversation/users`,
+    });
+  }
+
+  @Get('conversation/users/:id')
   @UseInterceptors(ClassSerializerInterceptor)
   async getConversation(
     @Param('id', new ParseUUIDPipe()) id: string,
@@ -29,10 +44,12 @@ export class MessengerController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ): Promise<Pagination<Message>> {
+    limit = limit > 100 ? 100 : limit;
+
     return this.messengerService.getUserConversation(user, id, {
       page,
       limit,
-      route: `${process.env.API_URL}/messenger/conversation/${id}`,
+      route: `${process.env.API_URL}/messenger/conversation/users/${id}`,
     });
   }
 
