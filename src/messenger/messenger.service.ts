@@ -103,11 +103,16 @@ export class MessengerService {
       .where('message.author = :author', { author: user.id })
       .distinct(true)
       .execute();
+    console.log(recivers);
 
-    const ids = [];
+    let ids = [];
     if (recivers instanceof Array) {
-      ids.push(recivers.map(({ reciverId }) => reciverId));
-      ids.push(recivers.map(({ authorId }) => authorId));
+      ids = [...ids, ...recivers.map(({ reciverId }) => reciverId)];
+      ids = [...ids, ...recivers.map(({ authorId }) => authorId)];
+    }
+
+    if (!ids) {
+      return;
     }
 
     return paginate<User>(this.userService.userRepository, options, {
