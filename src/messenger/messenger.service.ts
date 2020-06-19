@@ -99,14 +99,15 @@ export class MessengerService {
   ): Promise<Pagination<User>> {
     const recivers = await this.messengerRepository
       .createQueryBuilder('message')
-      .select('message.reciver')
+      .select('message.reciver, message.author')
       .where('message.author = :author', { author: user.id })
       .distinct(true)
       .execute();
 
-    let ids = [];
+    const ids = [];
     if (recivers instanceof Array) {
-      ids = recivers.map(({ reciverId }) => reciverId);
+      ids.push(recivers.map(({ reciverId }) => reciverId));
+      ids.push(recivers.map(({ authorId }) => authorId));
     }
 
     return paginate<User>(this.userService.userRepository, options, {
