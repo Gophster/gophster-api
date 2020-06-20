@@ -3,6 +3,7 @@ import {
   BadRequestException,
   ClassSerializerInterceptor,
   UseInterceptors,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InjectQueue } from '@nestjs/bull';
@@ -105,7 +106,13 @@ export class FollowService {
     return followSuggestions;
   }
 
-  async getFollowers(author: User): Promise<User[]> {
+  async getFollowers(author: User, userHandle: string): Promise<User[]> {
+    const targetUser = await this.userService.userRepository.findOne(
+      {where: {handle: userHandle}}
+      );
+      if(!targetUser){
+        throw new NotFoundException();
+      }
     const followers = await this.userService.userRepository
       .createQueryBuilder('user')
       .where(qb => {
@@ -119,14 +126,20 @@ export class FollowService {
         return `user.id IN (${subQuery})`;
       })
       .andWhere('user.id != :userId')
-      .setParameter('userId', author.id)
+      .setParameter('userId', targetUser.id)
       .orderBy('user.followersAmount', 'DESC')
       .getMany();
 
     return followers;
   }
 
-  async getFollowings(author: User): Promise<User[]> {
+  async getFollowings(author: User,userHandle: string): Promise<User[]> {
+    const targetUser = await this.userService.userRepository.findOne(
+      {where: {handle: userHandle}}
+      );
+      if(!targetUser){
+        throw new NotFoundException();
+      }
     const followers = await this.userService.userRepository
       .createQueryBuilder('user')
       .where(qb => {
@@ -139,8 +152,8 @@ export class FollowService {
 
         return `user.id IN (${subQuery})`;
       })
-      .andWhere('user.id != :userId')
-      .setParameter('userId', author.id)
+      .andWhere('user.handle != :userId')
+      .setParameter('userId', targetUser.id)
       .orderBy('user.followersAmount', 'DESC')
       .getMany();
 
