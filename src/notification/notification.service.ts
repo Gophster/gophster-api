@@ -88,11 +88,9 @@ export class NotificationService {
         .save();
 
       if (user.socketId !== null) {
-        await this.appGateway.server
-          .to(user.socketId)
-          .emit('notification', {
-            data: classToPlain(notification),
-          });
+        await this.appGateway.server.to(user.socketId).emit('notification', {
+          data: classToPlain(notification),
+        });
       }
     }
   }
@@ -131,11 +129,9 @@ export class NotificationService {
         .save();
 
       if (reciver.socketId !== null) {
-        await this.appGateway.server
-          .to(reciver.socketId)
-          .emit('notification', {
-            data: classToPlain(notification),
-          });
+        await this.appGateway.server.to(reciver.socketId).emit('notification', {
+          data: classToPlain(notification),
+        });
       }
     }
   }

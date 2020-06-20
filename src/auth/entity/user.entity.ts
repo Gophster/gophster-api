@@ -64,7 +64,7 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   @Exclude()
   socketId: string;
-  
+
   @BeforeInsert()
   async hashPasswordAndGenSalt() {
     this.salt = await bcrypt.genSalt();

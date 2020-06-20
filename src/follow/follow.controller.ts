@@ -13,6 +13,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   HttpCode,
+  Param,
 } from '@nestjs/common';
 
 import { FollowService } from './follow.service';
@@ -59,5 +60,23 @@ export class FollowController {
   @UseInterceptors(ClassSerializerInterceptor)
   async suggestions(@ExtractUser() user: User): Promise<User[]> {
     return this.followService.suggestions(user);
+  }
+
+  @Get('followers/:handle')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async followers(
+    @ExtractUser() user: User,
+    @Param('handle') handle: string,
+  ): Promise<User[]> {
+    return this.followService.getFollowers(user, handle);
+  }
+
+  @Get('following/:handle')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async following(
+    @ExtractUser() user: User,
+    @Param('handle') handle: string,
+  ): Promise<User[]> {
+    return this.followService.getFollowings(user, handle);
   }
 }
