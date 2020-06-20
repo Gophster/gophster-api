@@ -105,7 +105,7 @@ export class FollowService {
     return followSuggestions;
   }
 
-  async getFollowers(author: User): Promise<User[]>{
+  async getFollowers(author: User): Promise<User[]> {
     const followers = await this.userService.userRepository
       .createQueryBuilder('user')
       .where(qb => {
@@ -116,7 +116,7 @@ export class FollowService {
           .where('follow.reciver = :userId')
           .getQuery();
 
-        return `user.id NOT IN (${subQuery})`;
+        return `user.id IN (${subQuery})`;
       })
       .andWhere('user.id != :userId')
       .setParameter('userId', author.id)
@@ -126,24 +126,24 @@ export class FollowService {
     return followers;
   }
 
-  async getFollowings(author: User): Promise<User[]>{
+  async getFollowings(author: User): Promise<User[]> {
     const followers = await this.userService.userRepository
-    .createQueryBuilder('user')
-    .where(qb => {
-      const subQuery = qb
-        .subQuery()
-        .select('follow.author')
-        .from(Follow, 'follow')
-        .where('follow.author = :userId')
-        .getQuery();
+      .createQueryBuilder('user')
+      .where(qb => {
+        const subQuery = qb
+          .subQuery()
+          .select('follow.reciver')
+          .from(Follow, 'follow')
+          .where('follow.author = :userId')
+          .getQuery();
 
-      return `user.id NOT IN (${subQuery})`;
-    })
-    .andWhere('user.id != :userId')
-    .setParameter('userId', author.id)
-    .orderBy('user.followersAmount', 'DESC')
-    .getMany();
+        return `user.id IN (${subQuery})`;
+      })
+      .andWhere('user.id != :userId')
+      .setParameter('userId', author.id)
+      .orderBy('user.followersAmount', 'DESC')
+      .getMany();
 
-  return followers;
+    return followers;
   }
 }
