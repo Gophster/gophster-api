@@ -107,12 +107,12 @@ export class FollowService {
   }
 
   async getFollowers(author: User, userHandle: string): Promise<User[]> {
-    const targetUser = await this.userService.userRepository.findOne(
-      {where: {handle: userHandle}}
-      );
-      if(!targetUser){
-        throw new NotFoundException();
-      }
+    const targetUser = await this.userService.userRepository.findOne({
+      where: { handle: userHandle },
+    });
+    if (!targetUser) {
+      throw new NotFoundException();
+    }
     const followers = await this.userService.userRepository
       .createQueryBuilder('user')
       .where(qb => {
@@ -133,13 +133,13 @@ export class FollowService {
     return followers;
   }
 
-  async getFollowings(author: User,userHandle: string): Promise<User[]> {
-    const targetUser = await this.userService.userRepository.findOne(
-      {where: {handle: userHandle}}
-      );
-      if(!targetUser){
-        throw new NotFoundException();
-      }
+  async getFollowings(author: User, userHandle: string): Promise<User[]> {
+    const targetUser = await this.userService.userRepository.findOne({
+      where: { handle: userHandle },
+    });
+    if (!targetUser) {
+      throw new NotFoundException();
+    }
     const followers = await this.userService.userRepository
       .createQueryBuilder('user')
       .where(qb => {

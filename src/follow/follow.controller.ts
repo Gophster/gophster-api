@@ -67,8 +67,8 @@ export class FollowController {
   async followers(
     @ExtractUser() user: User,
     @Param('handle') handle: string,
-    ): Promise<User[]> {
-    return this.followService.getFollowers(user,handle);
+  ): Promise<User[]> {
+    return this.followService.getFollowers(user, handle);
   }
 
   @Get('following/:handle')
@@ -76,7 +76,7 @@ export class FollowController {
   async following(
     @ExtractUser() user: User,
     @Param('handle') handle: string,
-    ): Promise<User[]> {
-    return this.followService.getFollowings(user,handle);
+  ): Promise<User[]> {
+    return this.followService.getFollowings(user, handle);
   }
 }
