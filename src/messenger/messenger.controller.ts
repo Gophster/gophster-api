@@ -43,7 +43,7 @@ export class MessengerController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @ExtractUser() user: User,
     @Query('page') page = 1,
-    @Query('limit') limit = 10,
+    @Query('limit') limit = 50,
   ): Promise<Pagination<Message>> {
     limit = limit > 100 ? 100 : limit;
 
