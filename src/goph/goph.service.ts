@@ -1,3 +1,4 @@
+import { Reply } from 'src/reply/reply.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { GophDto } from './dto/goph.dto';
 import { User } from '../auth/entity/user.entity';
@@ -78,6 +79,13 @@ export class GophService {
   }
 
   async deleteGoph(id: string, user: User): Promise<Goph> {
+    await this.gophRepository.manager.connection
+      .createQueryBuilder()
+      .delete()
+      .from(Reply)
+      .where('goph.id = :id', { id })
+      .execute();
+
     const goph = await this.gophRepository.findOne({
       where: { id: id, author: user },
     });
