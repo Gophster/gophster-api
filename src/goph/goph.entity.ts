@@ -37,7 +37,7 @@ export class Goph extends BaseEntity {
   @OneToMany(
     type => Reply,
     replies => replies.goph,
-    { eager: false, onDelete: 'CASCADE' },
+    { eager: false, cascade: true },
   )
   replies: Promise<Reply[]>;
 

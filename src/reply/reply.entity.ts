@@ -30,7 +30,7 @@ export class Reply extends BaseEntity {
   @ManyToOne(
     type => Goph,
     goph => goph.replies,
-    { eager: false },
+    { eager: false, onDelete: 'CASCADE' },
   )
   goph: Goph;
 }
