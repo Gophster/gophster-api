@@ -60,4 +60,16 @@ export class FollowController {
   async suggestions(@ExtractUser() user: User): Promise<User[]> {
     return this.followService.suggestions(user);
   }
+
+  @Get('followers')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async followers(@ExtractUser() user: User): Promise<User[]> {
+    return this.followService.getFollowers(user);
+  }
+
+  @Get('following')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async following(@ExtractUser() user: User): Promise<User[]> {
+    return this.followService.getFollowings(user);
+  }
 }

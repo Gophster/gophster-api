@@ -104,4 +104,46 @@ export class FollowService {
 
     return followSuggestions;
   }
+
+  async getFollowers(author: User): Promise<User[]> {
+    const followers = await this.userService.userRepository
+      .createQueryBuilder('user')
+      .where(qb => {
+        const subQuery = qb
+          .subQuery()
+          .select('follow.author')
+          .from(Follow, 'follow')
+          .where('follow.reciver = :userId')
+          .getQuery();
+
+        return `user.id IN (${subQuery})`;
+      })
+      .andWhere('user.id != :userId')
+      .setParameter('userId', author.id)
+      .orderBy('user.followersAmount', 'DESC')
+      .getMany();
+
+    return followers;
+  }
+
+  async getFollowings(author: User): Promise<User[]> {
+    const followers = await this.userService.userRepository
+      .createQueryBuilder('user')
+      .where(qb => {
+        const subQuery = qb
+          .subQuery()
+          .select('follow.reciver')
+          .from(Follow, 'follow')
+          .where('follow.author = :userId')
+          .getQuery();
+
+        return `user.id IN (${subQuery})`;
+      })
+      .andWhere('user.id != :userId')
+      .setParameter('userId', author.id)
+      .orderBy('user.followersAmount', 'DESC')
+      .getMany();
+
+    return followers;
+  }
 }
