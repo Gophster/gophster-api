@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  AfterLoad,
 } from 'typeorm';
 import { User } from '../auth/entity/user.entity';
 import { Reply } from 'src/reply/reply.entity';
@@ -39,4 +40,11 @@ export class Goph extends BaseEntity {
     { eager: false },
   )
   replies: Promise<Reply[]>;
+
+  repliesAmount: number;
+
+  @AfterLoad()
+  async getReplayAmount() {
+    this.repliesAmount = (await this.replies).length;
+  }
 }
