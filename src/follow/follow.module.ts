@@ -11,8 +11,8 @@ import { FollowController } from './follow.controller';
 @Module({
   imports: [
     forwardRef(() => AuthModule),
+    forwardRef(() => NotificationModule),
     TypeOrmModule.forFeature([FollowRepository]),
-    NotificationModule,
     BullModule.registerQueue({
       name: 'notification',
       redis: {

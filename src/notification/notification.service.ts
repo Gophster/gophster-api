@@ -1,5 +1,4 @@
 import { UserRepository } from './../auth/entity/user.repository';
-import { NotificationGateway } from './notification.gateway';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In } from 'typeorm';
@@ -16,6 +15,7 @@ import { classToPlain } from 'class-transformer';
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 import { Follow } from '../follow/follow.entity';
+import { ApplicationGateway } from './application.gateway';
 
 @Injectable()
 @Processor('notification')
@@ -24,7 +24,7 @@ export class NotificationService {
     @InjectRepository(Notification)
     private notificationRepository: NotificationRepository,
     private userRepository: UserRepository,
-    private notificationGateway: NotificationGateway,
+    private appGateway: ApplicationGateway,
   ) {}
 
   async paginateUserNotifications(
@@ -88,7 +88,7 @@ export class NotificationService {
         .save();
 
       if (user.socketId !== null) {
-        await this.notificationGateway.notificaitonServer
+        await this.appGateway.server
           .to(user.socketId)
           .emit('notification', {
             data: classToPlain(notification),
@@ -131,7 +131,7 @@ export class NotificationService {
         .save();
 
       if (reciver.socketId !== null) {
-        await this.notificationGateway.notificaitonServer
+        await this.appGateway.server
           .to(reciver.socketId)
           .emit('notification', {
             data: classToPlain(notification),

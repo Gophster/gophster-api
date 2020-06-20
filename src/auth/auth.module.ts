@@ -1,3 +1,4 @@
+import { WsJwtGuard } from './services/wsjwt.guard';
 import { NotificationModule } from './../notification/notification.module';
 import { FollowModule } from './../follow/follow.module';
 import { Module, forwardRef } from '@nestjs/common';
@@ -35,7 +36,7 @@ import * as fs from 'fs';
     forwardRef(() => NotificationModule),
   ],
   controllers: [AuthController, UserController],
-  providers: [AuthService, JwtStrategy, UserService],
-  exports: [PassportModule, JwtStrategy, UserService, AuthService],
+  providers: [AuthService, JwtStrategy, UserService, WsJwtGuard],
+  exports: [PassportModule, JwtStrategy, UserService, AuthService, WsJwtGuard],
 })
 export class AuthModule {}

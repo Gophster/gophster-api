@@ -15,7 +15,7 @@ import { User } from '../entity/user.entity';
 export class AuthService {
   constructor(
     @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
+    public userRepository: UserRepository,
     private jwtService: JwtService,
   ) {}
 
